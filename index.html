@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Scouting - 2026 FRC Rebuilt</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+      color: white;
+      overflow: hidden; /* Prevent scrolling */
+    }
+
+    /* Form Sections */
+    .form-section {
+      display: none;
+      background: white;
+      padding: 40px 20px 20px; /* Reduced padding at the top */
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      max-width: 90%;
+      width: 100%;
+      text-align: center;
+      color: black;
+      animation: fadeIn 0.3s ease-in-out;
+      margin-top: 20px; /* Reduced margin to bring the heading closer to the top */
+    }
+
+    .active {
+      display: block;
+    }
+
+    /* Timer Styling */
+    .timer {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: white;
+      z-index: 1000;
+      white-space: nowrap; /* Ensure text stays on one line */
+    }
+
+    /* Auton and Teleop Background Colors */
+    #auton-form, #auton-options {
+      background: #fff3e0; /* Light orange for Auton */
+    }
+
+    #teleop-form {
+      background: #e7ffe0; /* Light green for Teleop */
+    }
+
+    #end-game-form {
+      background: #e3f2fd; /* Light blue for Climb */
+    }
+
+    /* Labels and Inputs */
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 95%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    /* Buttons */
+    button {
+      margin: 5px 10px; /* Reduced margin */
+      padding: 8px 12px; /* Reduced padding */
+      border: none;
+      border-radius: 8px;
+      background: #007BFF;
+      color: white;
+      font-size: 14px; /* Reduced font size */
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      user-select: none; /* Prevent text selection */
+    }
+
+    button:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    .back-button {
+      background: #6c757d;
+    }
+
+    .start-scouting-button {
+      background: #28a745;
+    }
+
+    .counter-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px; /* Reduced gap */
+      margin-top: 5px;
+      width: 100%;
+    }
+
+    .counter {
+      font-size: 16px; /* Reduced font size */
+      font-weight: bold;
+    }
+
+    .minus-button {
+      background: red;
+    }
+
+    .easter-egg-button {
+      background: #efafff;
+    }
+
+    .option-label {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 14px; /* Reduced font size */
+      font-weight: bold;
+    }
+
+    /* Home Screen */
+    .home-screen {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 90%;
+      width: 420px;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .home-screen img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .home-screen h2 {
+      color: #2c3e50;
+      margin: 10px 0;
+    }
+
+    .home-screen p {
+      font-size: 16px;
+      color: #555;
+      font-weight: bold;
+    }
+    
+    .reminder {
+      font-size: 12px;
+    }
+
+    /* Auton and Teleop Mode Text Animations - Removed because the options available are now clearly distinct*/
+    /*#auton-form h2,
+    #auton-options h2 {
+      animation: breathe 4s infinite, rgbCycle 6s infinite;
+    }
+
+    #teleop-form h2 {
+      animation: jump 1.5s infinite;
+      color: black;
+    }*/
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes breathe {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes rgbCycle {
+      0% { color: rgb(255, 0, 0); }
+      33% { color: rgb(0, 255, 0); }
+      66% { color: rgb(0, 0, 255); }
+      100% { color: rgb(255, 0, 0); }
+    }
+
+    @keyframes jump {
+      0%, 100% { transform: translateY(0); }
+      10% { transform: translateY(0); }
+      30% { transform: translateY(-30px); }
+      50% { transform: translateY(0); }
+      70% { transform: translateY(-15px); }
+      90% { transform: translateY(0); }
+    }
+
+    /* Robot Move Buttons */
+    .robot-move-buttons {
+      display: flex;
+      gap: 5px; /* Reduced gap */
+      justify-content: center;
+    }
+
+    .robot-move-buttons button {
+      width: 80px; /* Reduced width */
+    }
+
+    .robot-move-buttons button.yes {
+      background: green;
+    }
+
+    .robot-move-buttons button.no {
+      background: red;
+    }
+
+    .robot-move-buttons button.selected {
+      opacity: 0.7;
+      transform: scale(0.95);
+    }
+
+    /* Climb Buttons */
+    .climb-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 2 columns */
+      gap: 10px; /* Adjust gap between buttons */
+      margin-top: 10px;
+    }
+
+    .climb-buttons button {
+      width: 100%;
+      background: #007BFF;
+      padding: 10px; /* Adjust padding for better spacing */
+    }
+
+    .climb-buttons button.failure {
+      background: #FF5733;
+    }
+    
+    .climb-buttons button.noattempt {
+      background: #CFBF23;
+      align-self: center;
+    }
+
+    .climb-buttons button.selected {
+      background: #0056b3;
+    }
+
+    .climb-buttons button.failure.selected {
+      background: #cc3300;
+    }
+    
+    .climb-buttons button.noattempt.selected {
+      background: #AF9710;
+    }
+
+    /* Counter Labels */
+    .counter-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .counter-labels span {
+      flex: 1;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Timer -->
+  <div id="timer" class="timer" style="display: none;"></div>
+
+  <!-- Home Screen -->
+  <div id="home-screen" class="home-screen active">
+    <h2>Scouting Application</h2>
+    <img onclick="easterEggClickGRT()" src="https://grt-scouting.netlify.app/reefscape-image.png" alt="FRC Rebuilt 2026">
+    <h2>2026 FRC Rebuilt</h2>
+    <p id="credits">Built by Tom Scheib, from Meni Gottesman's <a href="https://grt-scouting.netlify.app">2025 App</a></p>
+    <button onclick="startScouting()">Open Scouting Application</button>
+  </div>
+
+  <!-- Initial Form -->
+  <div id="initial-form" class="form-section">
+    <h2>FRC Match Scouting</h2>
+    <label for="match-type">Match Type:</label>
+    <select id="match-type" required>
+      <option value="" disabled selected>Select Match Type</option>
+      <option value="Qualification">Qualification</option>
+      <option value="Playoff">Playoff</option>
+    </select>
+    <label for="match-number">Match Number:</label>
+    <input type="number" id="match-number" required>
+    <label for="team-number">Team Number:</label>
+    <input type="number" id="team-number" required>
+    <label for="name">Your Name:</label>
+    <input type="text" id="name" required>
+    <button onclick="submitInitialForm()" class="start-scouting-button">Start Scouting</button>
+  </div>
+
+  <!-- Auton Mode -->
+  <div id="auton-form" class="form-section">
+    <h2>Auton Phase</h2>
+    <label>Did the robot move during Auton?</label>
+    <div class="robot-move-buttons">
+      <button class="yes" onclick="showAutonOptions(true)">Yes</button>
+      <button class="no" onclick="showAutonOptions(false)">No</button>
+    </div>
+    <button onclick="handleBackFromAuton()" class="back-button">Back</button>
+  </div>
+
+  <!-- Auton Options -->
+  <div id="auton-options" class="form-section">
+    <h2>Auton Phase</h2>
+    <label>Fuel Scored:</label>
+    <div class="counter-labels">
+      <div class="counter-container">
+        <button onclick="updateCount('autonFuel', -20)" class="minus-button">-20</button>
+        <button onclick="updateCount('autonFuel', -5)" class="minus-button">-5</button>
+        <button onclick="updateCount('autonFuel', -1)" class="minus-button">-1</button>
+        <span id="autonFuel-count" class="counter">0</span>
+        <button onclick="updateCount('autonFuel', 1)">+1</button>
+        <button onclick="updateCount('autonFuel', 5)">+5</button>
+        <button onclick="updateCount('autonFuel', 20)">+20</button>
+      </div>
+    </div>
+    <p class="reminder">A perfect count is <strong>not</strong> required here! Make your best estimate from what you see and move on. On average, high rankings and low rankings will cancel out, giving an approximately correct score.</p>
+    <br><br>
+    <label>Climb:</label>
+    <div class="auton-climb-buttons climb-buttons">
+      <button onclick="selectClimb('auton', 'L1')">Climbed (L1+)</button>
+      <button class="failure" onclick="selectClimb('auton', 'Failed')">Failed to climb</button>
+      <button class="noattempt" onclick="selectClimb('auton', 'No attempt')">Did not attempt</button>
+    </div>
+    <button onclick="submitAuton()" class="start-scouting-button">Switch to Teleop</button>
+    <button onclick="showSection('auton-form')" class="back-button">Back</button>
+  </div>
+
+  <!-- Teleop Mode Form -->
+  <div id="teleop-form" class="form-section">
+    <h2>Teleop Phase</h2>
+    <label>Was the robot's hub active first?</label>
+    <div class="robot-move-buttons">
+      <button class="yes" onclick="selectHubActive(true)">Yes</button>
+      <button class="no" onclick="selectHubActive(false)">No</button>
+    </div>
+    <br><br>
+    <label>Fuel Scored:</label>
+    <br>
+    First Hub Active Period
+    <div class="counter-labels">
+      <div class="counter-container">
+        <button onclick="updateCount('teleopFuel1', -20)" class="minus-button">-20</button>
+        <button onclick="updateCount('teleopFuel1', -5)" class="minus-button">-5</button>
+        <button onclick="updateCount('teleopFuel1', -1)" class="minus-button">-1</button>
+        <span id="teleopFuel1-count" class="counter">0</span>
+        <button onclick="updateCount('teleopFuel1', 1)">+1</button>
+        <button onclick="updateCount('teleopFuel1', 5)">+5</button>
+        <button onclick="updateCount('teleopFuel1', 20)">+20</button>
+      </div>
+    </div>
+    <br>
+    Second Hub Active Period
+    <div class="counter-labels">
+      <div class="counter-container">
+        <button onclick="updateCount('teleopFuel2', -20)" class="minus-button">-20</button>
+        <button onclick="updateCount('teleopFuel2', -5)" class="minus-button">-5</button>
+        <button onclick="updateCount('teleopFuel2', -1)" class="minus-button">-1</button>
+        <span id="teleopFuel2-count" class="counter">0</span>
+        <button onclick="updateCount('teleopFuel2', 1)">+1</button>
+        <button onclick="updateCount('teleopFuel2', 5)">+5</button>
+        <button onclick="updateCount('teleopFuel2', 20)">+20</button>
+      </div>
+    </div>
+    <br>
+    Endgame
+    <div class="counter-labels">
+      <div class="counter-container">
+        <button onclick="updateCount('teleopFuel3', -20)" class="minus-button">-20</button>
+        <button onclick="updateCount('teleopFuel3', -5)" class="minus-button">-5</button>
+        <button onclick="updateCount('teleopFuel3', -1)" class="minus-button">-1</button>
+        <span id="teleopFuel3-count" class="counter">0</span>
+        <button onclick="updateCount('teleopFuel3', 1)">+1</button>
+        <button onclick="updateCount('teleopFuel3', 5)">+5</button>
+        <button onclick="updateCount('teleopFuel3', 20)">+20</button>
+      </div>
+    </div>
+    <br>
+    <button onclick="submitTeleop()" class="start-scouting-button">Switch to End Game</button>
+    <button onclick="showSection('easter-egg-menu')" id="easter-egg-button" class="easter-egg-button" style="display: none;">???</button>
+    <button onclick="handleBackFromTeleop()" class="back-button">Back</button>
+  </div>
+
+  <!-- Easter Egg Menu -->
+  <div id="easter-egg-menu" class="form-section">
+    <h2>???</h2>
+    <label id="easter-egg-location">0</label>
+    <div class="counter-labels">
+      <div class="counter-container">
+        <button onclick="easterEggMenu(0)" class="easter-egg-button">1</button>
+        <button onclick="easterEggMenu(1)" class="easter-egg-button">2</button>
+        <button onclick="easterEggMenu(2)" class="easter-egg-button">3</button>
+        <button onclick="showSection('teleop-form')" class="back-button">Back</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- End Game Selection -->
+  <div id="end-game-form" class="form-section">
+    <h2>Endgame Climb:</h2>
+    <label>Choose Climb Option:</label>
+    <div class="teleop-climb-buttons climb-buttons">
+      <button onclick="selectClimb('teleop', 'L3')">Climbed (L3)</button>
+      <button onclick="selectClimb('teleop', 'L2')">Climbed (L2)</button>
+      <button onclick="selectClimb('teleop', 'L1')">Climbed (L1)</button>
+      <button class="failure" onclick="selectClimb('teleop', 'Failed')">Failed to climb</button>
+      <button class="noattempt" onclick="selectClimb('teleop', 'No attempt')">Did not attempt</button>
+    </div>
+    <button onclick="submitEndGame()" class="submit-data-button">Switch to Postgame</button>
+    <button onclick="showSection('teleop-form')" class="back-button">Back</button>
+  </div>
+
+  <!-- Postgame Questions -->
+  <div id="post-game-questions" class="form-section">
+    <h2>Postgame Questions</h2>
+    <label>Did the team win?</label>
+    <div class="robot-move-buttons">
+      <button class="yes" onclick="setTeamWin(true)">Yes</button>
+      <button class="no" onclick="setTeamWin(false)">No</button>
+    </div>
+    <br>
+    <label for="inactive-time">What did the robot do while their hub was inactive?</label>
+    <textarea id="inactive-time" placeholder='e.g. Gather Fuel'></textarea>
+    <label for="additional-comments">Additional Comments:</label>
+    <textarea id="additional-comments" placeholder="Enter additional comments..."></textarea>
+    <button id="submit-button" onclick="submitPostGameQuestions()" class="submit-data-button">Submit</button>
+    <button onclick="showSection('end-game-form')" class="back-button">Back</button>
+  </div>
+
+  <script>
+    // Generate a unique user ID for each session
+    const userId = `user-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('userId', userId);
+
+    // Global data object to hold form values
+    let data = {
+      userId: userId, // Unique user ID
+      matchType: null,
+      matchNumber: null,
+      teamNumber: null,
+      name: null,
+      movedAuton: null,
+      autonFuel: 0,
+      autonClimb: null,
+      hubActiveFirst: null,
+      teleopFuel1: 0,
+      teleopFuel2: 0,
+      teleopFuel3: 0,
+      teleopClimb: null,
+      teamWin: null,
+      inactiveTime: "",
+      comments: ""
+    };
+
+    // Timer variables
+    let autonTimer, teleopTimer;
+    const autonDuration = 15; // 15 seconds
+    const teleopDuration = 140; // 2:20
+    let timerPid = 0;
+    let isTimerRunning = false; // Flag to track if the timer is running
+
+    // Load saved name from localStorage
+    function loadSavedName() {
+      const savedName = localStorage.getItem('scoutName');
+      if (savedName) {
+        document.getElementById('name').value = savedName;
+        data.name = savedName; // Pre-fill the data object
+      }
+    }
+
+    // Save name to localStorage
+    function saveName(name) {
+      localStorage.setItem('scoutName', name);
+    }
+
+    // Function to show a specific section by ID
+    function showSection(sectionId) {
+      document.querySelectorAll('.form-section').forEach(section => section.classList.remove('active'));
+      let newSection = document.getElementById(sectionId);
+      if (newSection) {
+        newSection.classList.add('active');
+      }
+    }
+
+    // Function to start scouting (hide home screen and show initial form)
+    function startScouting() {
+      // Show the initial form
+      document.getElementById('home-screen').style.display = "none";
+      showSection('initial-form');
+      loadSavedName(); // Load the saved name when starting scouting
+    }
+
+    // Called when a user answers the Auton movement question
+    function showAutonOptions(moved) {
+      data.movedAuton = moved;
+      if (!moved) {
+        // Skip auton-options and go directly to teleop-form
+        showSection('teleop-form');
+      } else {
+        // Show auton-options
+        showSection('auton-options');
+      }
+    }
+
+    // Handle back button from Teleop page
+    function handleBackFromTeleop() {
+      if (data.movedAuton === false) {
+        // If the robot did not move in auton, go back to auton-form
+        showSection('auton-form');
+      } else {
+        // Otherwise, go back to auton-options
+        showSection('auton-options');
+      }
+    }
+    
+    function handleBackFromAuton() {
+      isTimerRunning = false;
+      document.getElementById('timer').style.display = 'none';
+      showSection('initial-form');
+    }
+
+    // Called when the user submits the initial form
+    function submitInitialForm() {
+      const matchType = document.getElementById('match-type').value;
+      const matchNumber = document.getElementById('match-number').value;
+      const teamNumber = document.getElementById('team-number').value;
+      const name = document.getElementById('name').value;
+
+      if (!matchType || !matchNumber || !teamNumber || !name) {
+        alert("Please fill out all required fields.");
+        return;
+      }
+
+      data.matchType = matchType;
+      data.matchNumber = matchNumber;
+      data.teamNumber = teamNumber;
+      data.name = name;
+
+      // Save the name to localStorage
+      saveName(name);
+
+      // Start the timer
+      startTimers();
+
+      // Show the Auton form
+      showSection('auton-form');
+      
+      if (teamNumber == 192) {
+        document.getElementById("additional-comments").placeholder = "e.g. It's GRT!!!!!!!!!!!!!!!\n(give actual feedback, though)";
+      } else {
+        document.getElementById("additional-comments").placeholder = "Enter Additional Comments...";
+      }
+    }
+
+    // Function to set whether the team won
+    function selectHubActive(active) {
+      data.hubActiveFirst = active;
+      document.querySelectorAll('#teleop-form .robot-move-buttons button').forEach(button => {
+        button.classList.remove('selected');
+      });
+      event.target.classList.add('selected');
+    }
+
+    // Function to set whether the team won
+    function setTeamWin(didWin) {
+      data.teamWin = didWin;
+      document.querySelectorAll('#post-game-questions .robot-move-buttons button').forEach(button => {
+        button.classList.remove('selected');
+      });
+      event.target.classList.add('selected');
+    }
+
+    // Resets the form to start a new response
+    function resetForm() {
+      // Clear existing timers
+      clearInterval(autonTimer);
+      clearInterval(teleopTimer);
+
+      // Reset the timer display
+      document.getElementById('timer').textContent = "";
+      document.getElementById('timer').style.display = 'none';
+      isTimerRunning = false; // Mark the timer as not running
+
+      // Reset the data object
+      data = {
+        userId: userId, // Retain the unique user ID
+        matchType: null,
+        matchNumber: null,
+        teamNumber: null,
+        name: localStorage.getItem('scoutName'), // Retain the saved name
+        movedAuton: null,
+        autonFuel: 0,
+        autonClimb: null,
+        hubActiveFirst: null,
+        teleopFuel1: 0,
+        teleopFuel2: 0,
+        teleopFuel3: 0,
+        teleopClimb: null,
+        teamWin: null,
+        inactiveTime: "",
+        comments: ""
+      };
+
+      // Reset form fields
+      document.getElementById('match-type').value = "";
+      document.getElementById('match-number').value = "";
+      document.getElementById('team-number').value = "";
+      document.getElementById('name').value = data.name; // Pre-fill the saved name
+      document.getElementById('inactive-time').value = "";
+      document.getElementById('additional-comments').value = "";
+
+      // Reset counters
+      coralOptions.forEach(option => {
+        document.getElementById(`autonCoral-make-${option}-count`).textContent = 0;
+        document.getElementById(`autonCoral-miss-${option}-count`).textContent = 0;
+        document.getElementById(`teleopCoral-make-${option}-count`).textContent = 0;
+        document.getElementById(`teleopCoral-miss-${option}-count`).textContent = 0;
+      });
+      algaeOptions.forEach(option => {
+        document.getElementById(`autonAlgae-make-${option}-count`).textContent = 0;
+        document.getElementById(`autonAlgae-miss-${option}-count`).textContent = 0;
+        document.getElementById(`teleopAlgae-make-${option}-count`).textContent = 0;
+        document.getElementById(`teleopAlgae-miss-${option}-count`).textContent = 0;
+      });
+
+      // Reset selected buttons
+      document.querySelectorAll('.end-game-buttons button').forEach(button => {
+        button.classList.remove('selected');
+      });
+
+      document.querySelectorAll('#post-game-questions .robot-move-buttons button').forEach(button => {
+        button.classList.remove('selected');
+      });
+
+      // Show the initial form
+      showSection('initial-form');
+    }
+
+    // Updates the count for a given option
+
+    function updateCount(value, change) {
+      data[value] = Math.max(0, (data[value] || 0) + change);
+      document.getElementById(`${value}-count`).textContent = data[value];
+      if (data.teleopFuel1 == 1 && data.teleopFuel2 == 9 && data.teleopFuel3 == 2) {
+        document.getElementById("easter-egg-button").style.display = 'inline';
+      } else {
+        document.getElementById("easter-egg-button").style.display = 'none';
+      }
+    }
+
+    // Selects a climb option
+    function selectClimb(type, option) {
+      data[`${type}Climb`] = option;
+      document.querySelectorAll(`.${type}-climb-buttons button`).forEach(button => {
+        button.classList.remove('selected');
+      });
+      event.target.classList.add('selected')
+    }
+    
+    function submitAuton() {
+      if (!data.autonClimb) {
+        alert("Please select a climb option.");
+        return;
+      }
+      showSection('teleop-form');
+    }
+    
+    function submitTeleop() {
+      if (data.hubActiveFirst == null) {
+        alert("Please select whether the hub was active first (whether their alliance scored less fuel during auton).");
+        return;
+      }
+      showSection('end-game-form');
+    }
+
+    // Function to submit end game selection
+    function submitEndGame() {
+      if (!data.teleopClimb) {
+        alert("Please select an climb option.");
+        return;
+      }
+      showSection('post-game-questions');
+    }
+    let ee;
+    // Function to submit post-game questions
+    function submitPostGameQuestions() {
+      if (data.teamWin === null) {
+        alert("Please select whether the team won.");
+        return;
+      }
+
+      data.comments = document.getElementById('additional-comments').value;
+      data.inactiveTime = document.getElementById('inactive-time').value;
+
+      // Disable the submit button to prevent multiple submissions
+      const submitButton = document.getElementById('submit-button');
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+
+      // Send data to Google Sheets
+      sendDataToGoogleSheets(data).then(() => {
+        alert("Data submitted successfully!");
+        resetForm();
+      }).catch(error => {
+        if (error && Object.keys(error).length > 0) {
+          console.error(error);
+          ee = error;
+          alert('An error occurred while sending data to Google Sheets.');
+        }
+      }).finally(() => {
+        // Re-enable the submit button
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit";
+      });
+    }
+
+    // Function to send data to Google Sheets
+    async function sendDataToGoogleSheets(data) {
+      const webAppUrl = 'https://script.google.com/macros/s/AKfycbyPBMp6hI4n5zPndejftMLxqpeZO2gsPq4oC-WCYHDCHcxopEEhc5izgmLi-ccGXw5pZw/exec'; // Replace with your Web App URL
+
+      const response = await fetch(webAppUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      // Since 'no-cors' mode is used, you won't be able to access the response
+      alert('Data sent to Google Sheets!');
+    }
+
+    // Timer functions
+    function startTimers() {
+      isTimerRunning = true;
+      clearInterval(timerPid);
+      document.getElementById('timer').style.display = 'block';
+      startAutonTimer();
+    }
+
+    function startAutonTimer() {
+      let timeLeft = autonDuration;
+      document.getElementById('timer').textContent = `Auton Period: ${formatTime(timeLeft)}`; // Include period name
+      autonTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `Auton Period: ${formatTime(timeLeft)}`; // Include period name
+        if (timeLeft <= 0) {
+          clearInterval(autonTimer);
+          startTeleopTimer();
+        }
+      }, 1000);
+      timerPid = autonTimer;
+    }
+
+    function startTeleopTimer() {
+      let timeLeft = teleopDuration;
+      document.getElementById('timer').textContent = `Teleop Period: ${formatTime(timeLeft)}`; // Include period name
+      teleopTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `Teleop Period: ${formatTime(timeLeft)}`; // Include period name
+        if (timeLeft <= 0) {
+          clearInterval(teleopTimer);
+          document.getElementById('timer').textContent = "Match Over";
+        }
+      }, 1000);
+      timerPid = teleopTimer;
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+    
+    let GRTclicks = 0;
+    function easterEggClickGRT() {
+      GRTclicks++;
+      if (GRTclicks == 3) {
+        document.getElementById('credits').textContent = "Built by Tom Scheib, Easter Eggs by Ethan Soo"
+      }
+    }
+    
+    const easterEggMovement = [
+      [1, 2, 3],
+      [3, 4, 5],
+      [4, 6, 7],
+      [1, 5, 7],
+      [1, 3, 7],
+      [2, 3, 4],
+      [2, 7, 8],
+      [1, 2, 5],
+      [1, 5, 9],
+      [2, "★", 8]
+    ];
+    easterEggMovement["★"] = [1, 9, 2];
+    let easterEggRoom = 0;
+    function easterEggMenu(num) {
+      easterEggRoom = easterEggMovement[easterEggRoom][num];
+      document.getElementById("easter-egg-location").textContent = easterEggRoom;
+      let buttons = document.getElementsByClassName("easter-egg-button");
+      for (let i=0; i<3; i++) {
+        buttons.item(i+1).textContent = easterEggMovement[easterEggRoom][i];
+      }
+      showSection("none");
+      setTimeout(showSection, 50, "easter-egg-menu");
+    }
+
+    // Load the saved name when the page loads
+    window.onload = loadSavedName;
+  </script>
+</body>
+</html>
