@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -618,26 +619,26 @@
 
       // Reset the data object
       data = {
-        userId: userId, // Retain the unique user ID
-        matchType: null,
-        matchNumber: null,
-        teamNumber: null,
-        name: localStorage.getItem('scoutName'), // Retain the saved name
-        movedAuton: null,
-        autonFuel: 0,
-        autonClimb: null,
-        hubActiveFirst: null,
-        teleopFuel1: 0,
-        teleopFuel2: 0,
-        teleopFuel3: 0,
-        teleopClimb: null,
-        teamWin: null,
-        inactiveTime: "",
-        comments: ""
-      };
+      userId: userId, // Unique user ID
+      matchType: data.matchType,
+      matchNumber: null,
+      teamNumber: null,
+      name: localStorage.getItem('scoutName'),
+      movedAuton: null,
+      autonFuel: 0,
+      autonClimb: null,
+      hubActiveFirst: null,
+      teleopFuel1: 0,
+      teleopFuel2: 0,
+      teleopFuel3: 0,
+      teleopClimb: null,
+      teamWin: null,
+      inactiveTime: "",
+      comments: ""
+    };
 
       // Reset form fields
-      document.getElementById('match-type').value = "";
+      document.getElementById('match-type').value = data.matchType;
       document.getElementById('match-number').value = "";
       document.getElementById('team-number').value = "";
       document.getElementById('name').value = data.name; // Pre-fill the saved name
@@ -645,25 +646,13 @@
       document.getElementById('additional-comments').value = "";
 
       // Reset counters
-      coralOptions.forEach(option => {
-        document.getElementById(`autonCoral-make-${option}-count`).textContent = 0;
-        document.getElementById(`autonCoral-miss-${option}-count`).textContent = 0;
-        document.getElementById(`teleopCoral-make-${option}-count`).textContent = 0;
-        document.getElementById(`teleopCoral-miss-${option}-count`).textContent = 0;
-      });
-      algaeOptions.forEach(option => {
-        document.getElementById(`autonAlgae-make-${option}-count`).textContent = 0;
-        document.getElementById(`autonAlgae-miss-${option}-count`).textContent = 0;
-        document.getElementById(`teleopAlgae-make-${option}-count`).textContent = 0;
-        document.getElementById(`teleopAlgae-miss-${option}-count`).textContent = 0;
-      });
+      document.getElementById('autonFuel-count').textContent = 0;
+      document.getElementById('teleopFuel1-count').textContent = 0;
+      document.getElementById('teleopFuel2-count').textContent = 0;
+      document.getElementById('teleopFuel3-count').textContent = 0;
 
       // Reset selected buttons
-      document.querySelectorAll('.end-game-buttons button').forEach(button => {
-        button.classList.remove('selected');
-      });
-
-      document.querySelectorAll('#post-game-questions .robot-move-buttons button').forEach(button => {
+      document.querySelectorAll('button').forEach(button => {
         button.classList.remove('selected');
       });
 
