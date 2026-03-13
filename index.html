@@ -358,8 +358,8 @@
       <button class="failure" onclick="selectClimb('auton', 'Failed')">Failed to climb</button>
       <button class="noattempt" onclick="selectClimb('auton', 'No attempt')">Did not attempt</button>
     </div>
-    <button onclick="submitAuton()" class="start-scouting-button">Switch to Teleop</button>
     <button onclick="showSection('auton-form')" class="back-button">Back</button>
+    <button onclick="submitAuton()" class="start-scouting-button">Switch to Teleop</button>
   </div>
 
   <!-- Teleop Mode Form -->
@@ -412,9 +412,9 @@
       </div>
     </div>
     <br>
-    <button onclick="submitTeleop()" class="start-scouting-button">Switch to End Game</button>
-    <button onclick="showSection('easter-egg-menu')" id="easter-egg-button" class="easter-egg-button" style="display: none;">???</button>
     <button onclick="handleBackFromTeleop()" class="back-button">Back</button>
+    <button onclick="showSection('easter-egg-menu')" id="easter-egg-button" class="easter-egg-button" style="display: none;">???</button>
+    <button onclick="submitTeleop()" class="start-scouting-button">Switch to End Game</button>
   </div>
 
   <!-- Easter Egg Menu -->
@@ -423,10 +423,10 @@
     <label id="easter-egg-location">0</label>
     <div class="counter-labels">
       <div class="counter-container">
+        <button onclick="showSection('teleop-form')" class="back-button">Back</button>
         <button onclick="easterEggMenu(0)" class="easter-egg-button">1</button>
         <button onclick="easterEggMenu(1)" class="easter-egg-button">2</button>
         <button onclick="easterEggMenu(2)" class="easter-egg-button">3</button>
-        <button onclick="showSection('teleop-form')" class="back-button">Back</button>
       </div>
     </div>
   </div>
@@ -442,8 +442,8 @@
       <button class="failure" onclick="selectClimb('teleop', 'Failed')">Failed to climb</button>
       <button class="noattempt" onclick="selectClimb('teleop', 'No attempt')">Did not attempt</button>
     </div>
-    <button onclick="submitEndGame()" class="submit-data-button">Switch to Postgame</button>
     <button onclick="showSection('teleop-form')" class="back-button">Back</button>
+    <button onclick="submitEndGame()" class="submit-data-button">Switch to Postgame</button>
   </div>
 
   <!-- Postgame Questions -->
@@ -459,8 +459,8 @@
     <textarea id="inactive-time" placeholder='e.g. Gather Fuel'></textarea>
     <label for="additional-comments">Additional Comments:</label>
     <textarea id="additional-comments" placeholder="Enter additional comments..."></textarea>
-    <button id="submit-button" onclick="submitPostGameQuestions()" class="submit-data-button">Submit</button>
     <button onclick="showSection('end-game-form')" class="back-button">Back</button>
+    <button id="submit-button" onclick="submitPostGameQuestions()" class="submit-data-button">Submit</button>
   </div>
 
   <script>
